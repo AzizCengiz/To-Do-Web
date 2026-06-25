@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do List</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app-wrapper">
+
+    <div class="card">
+
+      <!-- Başlık -->
+      <header class="card-header">
+        <div class="header-top">
+          <div class="header-icon"><i class="fa-solid fa-check-double"></i></div>
+          <button id="themeToggle" class="theme-btn" aria-label="Tema değiştir" title="Tema değiştir">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+        </div>
+        <h1>To-Do List</h1>
+        <p class="subtitle">Görevlerini organize et, hedefe ulaş.</p>
+      </header>
+
+      <!-- İstatistikler -->
+      <div class="stats-bar" role="status" aria-live="polite">
+        <div class="stat">
+          <span class="stat-number" id="totalCount">0</span>
+          <span class="stat-label">Toplam</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-number" id="activeCount">0</span>
+          <span class="stat-label">Bekleyen</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-number" id="completedCount">0</span>
+          <span class="stat-label">Tamamlanan</span>
+        </div>
+      </div>
+
+      <!-- Arama -->
+      <div class="search-section">
+        <div class="search-wrapper">
+          <i class="fa-solid fa-search search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Görevlerde ara…" aria-label="Görev ara" />
+          <button id="clearSearchBtn" class="clear-search-btn" aria-label="Aramayı temizle">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Görev Ekleme Alanı -->
+      <div class="input-section">
+        <!-- Öncelik Seçici -->
+        <div class="priority-selector" role="radiogroup" aria-label="Görev önceliği">
+          <button class="prio-btn low" data-priority="low" role="radio" aria-checked="false">
+            <i class="fa-solid fa-arrow-down"></i> Düşük
+          </button>
+          <button class="prio-btn medium active" data-priority="medium" role="radio" aria-checked="true">
+            <i class="fa-solid fa-minus"></i> Orta
+          </button>
+          <button class="prio-btn high" data-priority="high" role="radio" aria-checked="false">
+            <i class="fa-solid fa-arrow-up"></i> Yüksek
+          </button>
+        </div>
+
+        <!-- Ana Input -->
+        <div class="input-wrapper" id="inputWrapper">
+          <i class="fa-solid fa-pen-to-square input-icon"></i>
+          <input
+            type="text"
+            id="taskInput"
+            placeholder="Yeni bir görev ekle…"
+            maxlength="120"
+            aria-label="Yeni görev"
+          />
+          <button id="addBtn" aria-label="Görev ekle">
+            <i class="fa-solid fa-plus"></i>
+            <span>Ekle</span>
+          </button>
+        </div>
+
+        <!-- Etiket ve Tarih -->
+        <div class="input-extras">
+          <div class="extra-field tags-field">
+            <i class="fa-solid fa-tags extra-icon"></i>
+            <input type="text" id="tagsInput" placeholder="Etiketler (virgülle ayır)" aria-label="Etiketler" />
+          </div>
+          <div class="extra-field date-field">
+            <i class="fa-solid fa-calendar-day extra-icon"></i>
+            <input type="date" id="dateInput" aria-label="Son tarih" />
+            <button id="clearDateBtn" class="clear-field-btn" aria-label="Tarihi temizle" type="button">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Etiket Önizleme -->
+        <div class="tag-preview" id="tagPreview"></div>
+
+        <!-- Hata mesajı -->
+        <p class="error-msg" id="errorMsg" role="alert" aria-hidden="true">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="errorText">Lütfen bir görev girin.</span>
+        </p>
+      </div>
+
+      <!-- Filtre Sekmeleri -->
+      <nav class="filter-tabs" role="tablist" aria-label="Görev filtresi">
+        <button class="tab active" data-filter="all" role="tab" aria-selected="true">
+          <i class="fa-solid fa-layer-group"></i> Tümü
+        </button>
+        <button class="tab" data-filter="active" role="tab" aria-selected="false">
+          <i class="fa-solid fa-hourglass-half"></i> Aktif
+        </button>
+        <button class="tab" data-filter="completed" role="tab" aria-selected="false">
+          <i class="fa-solid fa-circle-check"></i> Tamamlanan
+        </button>
+      </nav>
+
+      <!-- Görev Listesi -->
+      <main>
+        <ul class="task-list" id="taskList" role="list" aria-label="Görevler"></ul>
+
+        <!-- Boş durum -->
+        <div class="empty-state" id="emptyState" aria-hidden="true">
+          <div class="empty-icon"><i class="fa-regular fa-clipboard"></i></div>
+          <p class="empty-title">Henüz görev yok</p>
+          <p class="empty-sub">Yukarıdan yeni bir görev ekleyerek başla.</p>
+        </div>
+      </main>
+
+      <!-- İlerleme ve İstatistik -->
+      <div class="stats-section" id="statsSection">
+        <div class="progress-section">
+          <div class="progress-header">
+            <span><i class="fa-solid fa-chart-line"></i> İlerleme</span>
+            <span class="progress-percent" id="progressPercent">%0</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="chart-section">
+          <div class="chart-header">
+            <span><i class="fa-solid fa-chart-bar"></i> Son 7 Gün</span>
+          </div>
+          <div class="chart" id="chart"></div>
+        </div>
+      </div>
+
+      <!-- Alt Aksiyon -->
+      <footer class="card-footer">
+        <div class="footer-left">
+          <div class="export-group">
+            <button id="exportBtn" class="footer-btn" aria-label="Dışa aktar" title="Dışa aktar">
+              <i class="fa-solid fa-download"></i> Dışa Aktar
+            </button>
+            <div class="export-menu" id="exportMenu">
+              <button data-format="json" class="export-option"><i class="fa-solid fa-file-code"></i> JSON</button>
+              <button data-format="csv" class="export-option"><i class="fa-solid fa-file-csv"></i> CSV</button>
+            </div>
+          </div>
+          <button id="importBtn" class="footer-btn" aria-label="İçe aktar" title="İçe aktar">
+            <i class="fa-solid fa-upload"></i> İçe Aktar
+          </button>
+        </div>
+        <button id="clearAllBtn" class="clear-btn" aria-label="Tüm görevleri temizle">
+          <i class="fa-solid fa-trash-can"></i> Tümünü Temizle
+        </button>
+      </footer>
+
+    </div><!-- /card -->
+  </div><!-- /app-wrapper -->
+
+  <!-- Gizli dosya inputu -->
+  <input type="file" id="fileInput" accept=".json,.csv" style="display:none" />
+
+  <script src="script.js"></script>
+</body>
+</html>
